@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todo_php
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - todo_network
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=todo_list
+      - DB_USER=postgres
+      - DB_PASSWORD=your_password
+
+  db:
+    image: postgres:13
+    container_name: todo_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: todo_list
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - todo_network
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  todo_network:
+    driver: bridge
